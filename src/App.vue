@@ -5,19 +5,15 @@
         <tr>
           <td colspan="5">
             <div id="screen">
-              <span id="screen_top">M=0</span>
+              <span id="screen_top">M={{ memory || '0' }}</span>
+              <!-- <span id="operation" v-text="getOperater"></span> -->
               <div id="screen_bottom">
                 <!-- v-text is a directive that is used to replace the content of HTML tag with private data -->
                 <!-- It will update the content automatically when data is changed. It is called data reactive -->
 
                 <span>{{ operand || '0' }}</span>
-                <!-- <span v-text="operand" id="operand1">0</span>
-                <span v-text="append1"></span>
-                
-                <span v-text="numb_2" id="operand3"></span> -->
-                <!-- <span v-text=""></span> -->
               </div>
-              <!-- <span id="screen_bottom">0</span> -->  
+              <!-- <span id="screen_bottom">0</span> -->
             </div>
           </td>
         </tr>
@@ -35,7 +31,8 @@
             <button @click="memoryAdd" type="button" class="btn btn-warning">M+</button>
           </td>
           <td>
-            <button @Click="cancel" type="button" class="btn btn-light">
+            <!-- This button did not work properly -->
+            <button @Click="cancel()" type="button" class="btn btn-light">
               <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
             </button>
           </td>
@@ -123,7 +120,7 @@ export default {
       operand: '',
       operationClicked: false,
       operation: null,
-      operationShow: '',
+      setOperation: '',
       memory: null,
     };
   },
@@ -137,28 +134,35 @@ export default {
       }
       this.operand = `${this.operand}${number}`;
     },
-    showOperation(op){
+    showOperation(op) {
       this.OperationShow = op;
     },
     setPrevious() {
       this.previous = this.operand;
       this.operationClicked = true;
     },
+    getOperater() {
+      return this.setOperation;
+    },
     // Operations methods
     add() {
+      this.setOperation = '+';
       this.operation = (a, b) => a + b;
       this.setPrevious();
     },
     minus() {
       this.operation = (a, b) => b - a;
+      this.setOperation = '-';
       this.setPrevious();
     },
     times() {
       this.operation = (a, b) => a * b;
+      this.setOperation = '*';
       this.setPrevious();
     },
     divide() {
       this.operation = (a, b) => b / a;
+      this.setOperation = '/';
       this.setPrevious();
     },
     equal() {
@@ -180,9 +184,8 @@ export default {
         this.apppend('.');
       }
     },
-    cancel(){
-      parseInt(this.operand);
-      this.operand = (this.operand - (this.operand % 10))/10;
+    cancel() {
+      this.operand = (this.operand - (this.operand % 10)) / 10;
     },
     // MC MR M- M+
     memoryClear() {
@@ -192,10 +195,10 @@ export default {
       this.operand = this.memory;
     },
     memoryAdd() {
-      return parseFloat(this.operand) + parseFloat(this.memory);
+      this.memory -= -this.operand;
     },
     memoryMinus() {
-      return parseFloat(this.operand) - parseFloat(this.memory);
+      this.memory -= this.operand;
     },
   },
 };
@@ -242,7 +245,6 @@ table {
   text-align: right;
 }
 
-
 .button-row {
   display: flex;
   justify-content: space-between;
@@ -255,6 +257,21 @@ button {
 .long-btn {
   display: inline-block;
   height: 80px;
+}
+
+/* Operation show at the top right screen */
+#operation {
+  position: absolute;
+  right: 5px;
+  top: 8px;
+  border-radius: 1px;
+  width: 15px;
+  max-height: 15px;
+  background-color: rgb(156, 156, 156);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Message panel */
